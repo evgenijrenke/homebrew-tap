@@ -1,0 +1,6 @@
+# GA hosted labels not yet included in actionlint's built-in runner list.
+# https://github.com/actions/runner-images/issues/14747
+self-hosted-runner:
+  labels:
+    - ubuntu-26.04
+    - ubuntu-26.04-arm

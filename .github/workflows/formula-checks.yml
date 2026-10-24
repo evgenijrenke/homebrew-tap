@@ -20,27 +20,34 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-15, ubuntu-24.04-arm, ubuntu-24.04]
+        os: [macos-15, ubuntu-26.04-arm, ubuntu-26.04]
     runs-on: ${{ matrix.os }}
     env:
       # Avoid auto-updating and cleaning unrelated preinstalled runner packages.
       HOMEBREW_NO_AUTO_UPDATE: "1"
+      TAP: evgenijrenke/tap
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: Homebrew/actions/setup-homebrew@d482da0e602890d3160aade42e72c8556103bf04
-        id: homebrew
+      - name: Set up tap using runner Homebrew
+        run: |
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+            echo "/home/linuxbrew/.linuxbrew/bin" >> "$GITHUB_PATH"
+            echo "/home/linuxbrew/.linuxbrew/sbin" >> "$GITHUB_PATH"
+            uname -r
+          fi
+          brew tap --custom-remote "$TAP" "$GITHUB_WORKSPACE"
+          brew trust "$TAP"
       - name: Style and audit
         env:
-          TAP: ${{ steps.homebrew.outputs.tap-name }}
           HOMEBREW_NO_AUTO_UPDATE: "1"
         run: |
           brew style "$TAP"
           brew audit --strict "$TAP/cryptomator-cli"
       - name: Install and test
         env:
-          TAP: ${{ steps.homebrew.outputs.tap-name }}
           HOMEBREW_NO_AUTO_UPDATE: "1"
           HOMEBREW_NO_INSTALL_FROM_API: "1"
         run: |
