@@ -6,13 +6,17 @@ class CryptomatorCli < Formula
   depends_on arch: :arm64
 
   on_macos do
-    url "https://github.com/cryptomator/cli/releases/download/0.6.1/cryptomator-cli-0.6.1-mac-arm64.zip"
-    sha256 "9252f8765db5068931d78f1ee74f7fe4d653605bf691d30e05c119eb5fa5d0d3"
+    on_arm do
+      url "https://github.com/cryptomator/cli/releases/download/0.6.1/cryptomator-cli-0.6.1-mac-arm64.zip"
+      sha256 "9252f8765db5068931d78f1ee74f7fe4d653605bf691d30e05c119eb5fa5d0d3"
+    end
   end
 
   on_linux do
-    url "https://github.com/cryptomator/cli/releases/download/0.6.1/cryptomator-cli-0.6.1-linux-aarch64.zip"
-    sha256 "f8c493abefafd1d55903e20cbec281587dc70d7a9d5c5817b33f777204dd80ed"
+    on_arm do
+      url "https://github.com/cryptomator/cli/releases/download/0.6.1/cryptomator-cli-0.6.1-linux-aarch64.zip"
+      sha256 "f8c493abefafd1d55903e20cbec281587dc70d7a9d5c5817b33f777204dd80ed"
+    end
   end
 
   def install
