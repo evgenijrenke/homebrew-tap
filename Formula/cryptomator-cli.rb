@@ -4,7 +4,7 @@ class CryptomatorCli < Formula
   version "0.6.1"
   license "AGPL-3.0-only"
 
-  depends_on macos: :big_sur
+  depends_on :macos
 
   on_macos do
     on_arm do
