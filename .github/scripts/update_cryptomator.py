@@ -1,4 +1,4 @@
-"""Propose complete ARM64 updates without dropping required release assets."""
+"""Propose updates only when all three required platform assets exist."""
 
 import hashlib
 import json
@@ -9,13 +9,13 @@ import subprocess
 import urllib.request
 
 
-PLATFORMS = ("mac-arm64", "linux-aarch64")
+PLATFORMS = ("mac-arm64", "linux-aarch64", "linux-x64")
 RELEASE_ROOT = "https://github.com/cryptomator/cli/releases/download"
 ARCHIVE = re.compile(
     r'(?P<prefix>url ")'
     + re.escape(RELEASE_ROOT)
     + r'/[^"\n]+/cryptomator-cli-[^"\n]+-'
-    + r'(?P<platform>mac-arm64|linux-aarch64)\.zip'
+    + r'(?P<platform>mac-arm64|linux-aarch64|linux-x64)\.zip'
     + r'(?P<middle>"\s+sha256 ")[0-9a-f]{64}"'
 )
 
@@ -88,7 +88,7 @@ def main():
         return
     updated = update_formula(original, urls, checksum)
     path.write_text(updated)
-    report(f"Prepared {version}: both ARM64 platform archives downloaded and hashed.")
+    report(f"Prepared {version}: all three platform archives downloaded and hashed.")
     if output_path := os.environ.get("GITHUB_OUTPUT"):
         with open(output_path, "a") as output:
             output.write(f"changed=true\nversion={version}\n")

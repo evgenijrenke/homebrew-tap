@@ -62,7 +62,7 @@ jobs:
           gh workflow run formula-checks.yml --ref "$branch"
           if ! gh pr create --base master --head "$branch" \
             --title "Update Cryptomator CLI to $VERSION" \
-            --body "Updates both ARM64 platform archives and their SHA256 checksums. Formula checks must pass before merging. No vault mounting validation is performed."; then
+            --body "Updates macOS ARM64, Linux ARM64, and Linux x86_64 archives and their SHA256 checksums. Formula checks must pass before merging. No vault mounting validation is performed."; then
             echo "::error::Could not create the update PR. Check repository policy allowing GitHub Actions to create pull requests. No additional secret is required."
             exit 1
           fi

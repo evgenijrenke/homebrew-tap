@@ -20,16 +20,20 @@ def release(version="0.6.2", platforms=PLATFORMS):
 
 
 class UpdateTests(unittest.TestCase):
-    def test_only_arm64_assets_are_required(self):
-        self.assertEqual(PLATFORMS, ("mac-arm64", "linux-aarch64"))
+    def test_required_platforms_exclude_only_mac_intel(self):
+        self.assertEqual(PLATFORMS, ("mac-arm64", "linux-aarch64", "linux-x64"))
         _, urls, missing = release_assets(release())
         self.assertEqual(set(urls), set(PLATFORMS))
         self.assertEqual(missing, [])
 
-    def test_missing_linux_arm_skips_release(self):
-        _, urls, missing = release_assets(release(platforms=("mac-arm64",)))
-        self.assertEqual(urls, {})
-        self.assertEqual(missing, ["cryptomator-cli-0.6.2-linux-aarch64.zip"])
+    def test_missing_linux_assets_skip_release(self):
+        for platform in ("linux-aarch64", "linux-x64"):
+            with self.subTest(platform=platform):
+                _, urls, missing = release_assets(
+                    release(platforms=tuple(p for p in PLATFORMS if p != platform))
+                )
+                self.assertEqual(urls, {})
+                self.assertEqual(missing, [f"cryptomator-cli-0.6.2-{platform}.zip"])
 
     def test_missing_mac_arm_skips_release(self):
         version, urls, missing = release_assets(release(platforms=PLATFORMS[1:]))
@@ -45,7 +49,7 @@ class UpdateTests(unittest.TestCase):
         updated = update_formula(original, urls, lambda _: "a" * 64)
         for url in urls.values():
             self.assertIn(f'url "{url}"', updated)
-        self.assertEqual(updated.count(f'sha256 "{"a" * 64}"'), 2)
+        self.assertEqual(updated.count(f'sha256 "{"a" * 64}"'), 3)
         self.assertEqual(updated[updated.index("  def install"):],
                          original[original.index("  def install"):])
 
