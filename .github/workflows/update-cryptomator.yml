@@ -1,0 +1,68 @@
+name: Update Cryptomator CLI
+
+on:
+  schedule:
+    - cron: "23 7 * * 1"
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/scripts/**"
+      - ".github/workflows/update-cryptomator.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: update-cryptomator
+  cancel-in-progress: false
+
+jobs:
+  script-tests:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - run: python3 -m unittest discover -s .github/scripts -p 'test_*.py'
+
+  update:
+    if: github.event_name != 'pull_request'
+    needs: script-tests
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Check latest stable release
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/update_cryptomator.py
+      - name: Propose update
+        if: steps.release.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          branch="update/cryptomator-cli-$VERSION"
+          if [ "$(gh pr list --head "$branch" --state open --json number --jq length)" != "0" ]; then
+            echo "An update PR already exists for $VERSION." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          git switch -c "$branch"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Formula/cryptomator-cli.rb
+          git commit -m "Update Cryptomator CLI to $VERSION"
+          git push origin "$branch"
+          # GITHUB_TOKEN-created PRs do not trigger pull_request workflows.
+          gh workflow run formula-checks.yml --ref "$branch"
+          if ! gh pr create --base master --head "$branch" \
+            --title "Update Cryptomator CLI to $VERSION" \
+            --body "Updates all four platform archives and their SHA256 checksums. Formula checks must pass before merging. No vault mounting validation is performed."; then
+            echo "::error::Could not create the update PR. Check repository policy allowing GitHub Actions to create pull requests. No additional secret is required."
+            exit 1
+          fi

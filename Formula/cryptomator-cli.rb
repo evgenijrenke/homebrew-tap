@@ -3,8 +3,6 @@ class CryptomatorCli < Formula
   homepage "https://github.com/cryptomator/cli"
   license "AGPL-3.0-only"
 
-  depends_on :macos
-
   on_macos do
     on_arm do
       url "https://github.com/cryptomator/cli/releases/download/0.6.1/cryptomator-cli-0.6.1-mac-arm64.zip"

@@ -1,0 +1,45 @@
+name: Formula checks
+
+on:
+  pull_request:
+    paths:
+      - "Formula/**"
+      - ".github/workflows/formula-checks.yml"
+  push:
+    branches: [master]
+    paths:
+      - "Formula/**"
+      - ".github/workflows/formula-checks.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  formula:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, macos-15-intel, ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: Homebrew/actions/setup-homebrew@d482da0e602890d3160aade42e72c8556103bf04
+        id: homebrew
+      - name: Style and audit
+        env:
+          TAP: ${{ steps.homebrew.outputs.tap-name }}
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+        run: |
+          brew style "$TAP"
+          brew audit --strict "$TAP/cryptomator-cli"
+      - name: Install and test
+        env:
+          TAP: ${{ steps.homebrew.outputs.tap-name }}
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+          HOMEBREW_NO_INSTALL_FROM_API: "1"
+        run: |
+          brew install --build-from-source "$TAP/cryptomator-cli"
+          brew test "$TAP/cryptomator-cli"
