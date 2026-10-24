@@ -1,7 +1,6 @@
 class CryptomatorCli < Formula
   desc "Command-line interface for Cryptomator vaults"
   homepage "https://github.com/cryptomator/cli"
-  version "0.6.1"
   license "AGPL-3.0-only"
 
   depends_on :macos
