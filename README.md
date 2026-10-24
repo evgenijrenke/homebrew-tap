@@ -40,9 +40,12 @@ brew upgrade evgenijrenke/tap/cryptomator-cli
 
 ### Cryptomator CLI
 
-The formula was initially pinned to [release 0.6.1](https://github.com/cryptomator/cli/releases/tag/0.6.1), which
-provides macOS Apple Silicon, macOS Intel, Linux ARM64, and Linux x86_64
-artifacts. [Release 0.6.2](https://github.com/cryptomator/cli/releases/tag/0.6.2)
+The formula supports ARM64 on macOS (Apple Silicon) and Linux only.
+Intel/x86_64 is not supported.
+
+The formula was initially pinned to [release 0.6.1](https://github.com/cryptomator/cli/releases/tag/0.6.1),
+which provides both required ARM64 artifacts.
+[Release 0.6.2](https://github.com/cryptomator/cli/releases/tag/0.6.2)
 does not publish a macOS Apple Silicon artifact.
 
 Archive availability does not mean installation and mounting have been tested on
@@ -62,11 +65,11 @@ The formula code's license is separate from Cryptomator CLI's
 ## Automation
 
 Formula changes run Homebrew style, audit, installation, and formula tests on
-macOS ARM64, macOS Intel, Linux ARM64, and Linux x86_64 runners. These checks do
+macOS ARM64 and Linux ARM64 runners. These checks do
 not exercise vault mounting.
 
 A weekly or manually triggered release check proposes a formula update in a
-pull request only when the latest stable release contains all four required
+pull request only when the latest stable release contains both required ARM64
 archives. Missing assets are reported in the workflow summary; platform support
 is never silently dropped. Updates are not automatically merged.
 

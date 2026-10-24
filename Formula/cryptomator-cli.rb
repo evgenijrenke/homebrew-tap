@@ -3,28 +3,16 @@ class CryptomatorCli < Formula
   homepage "https://github.com/cryptomator/cli"
   license "AGPL-3.0-only"
 
-  on_macos do
-    on_arm do
-      url "https://github.com/cryptomator/cli/releases/download/0.6.1/cryptomator-cli-0.6.1-mac-arm64.zip"
-      sha256 "9252f8765db5068931d78f1ee74f7fe4d653605bf691d30e05c119eb5fa5d0d3"
-    end
+  depends_on arch: :arm64
 
-    on_intel do
-      url "https://github.com/cryptomator/cli/releases/download/0.6.1/cryptomator-cli-0.6.1-mac-x64.zip"
-      sha256 "0b2ea4b29ef7c8a63a501e15717351cb713f18053e08d65f7346d9c812ab8564"
-    end
+  on_macos do
+    url "https://github.com/cryptomator/cli/releases/download/0.6.1/cryptomator-cli-0.6.1-mac-arm64.zip"
+    sha256 "9252f8765db5068931d78f1ee74f7fe4d653605bf691d30e05c119eb5fa5d0d3"
   end
 
   on_linux do
-    on_arm do
-      url "https://github.com/cryptomator/cli/releases/download/0.6.1/cryptomator-cli-0.6.1-linux-aarch64.zip"
-      sha256 "f8c493abefafd1d55903e20cbec281587dc70d7a9d5c5817b33f777204dd80ed"
-    end
-
-    on_intel do
-      url "https://github.com/cryptomator/cli/releases/download/0.6.1/cryptomator-cli-0.6.1-linux-x64.zip"
-      sha256 "fa660d4e64bba2fa65526c0788ece7bece9a5a9813fab215c4f6402615d02cdb"
-    end
+    url "https://github.com/cryptomator/cli/releases/download/0.6.1/cryptomator-cli-0.6.1-linux-aarch64.zip"
+    sha256 "f8c493abefafd1d55903e20cbec281587dc70d7a9d5c5817b33f777204dd80ed"
   end
 
   def install
